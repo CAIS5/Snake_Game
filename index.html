@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Snake Game</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/style/index.css">
+    </head>
+    <body>
+        <main>
+            <div class="game-container">
+                <h1 class="game-title">Snake Game</h1>
+                <h2 class="game-score">Score <span id="score">0</span></h2>
+                <div class="game-grid"></div>
+            </div>
+
+            <div class="btn-container">
+                <div class="btn-direction">
+                    <div>
+                        <button class="btn"></button>
+                        <button class="btn btn-direction--up"></button>
+                        <button class="btn"></button>
+                    </div>
+                    <div>
+                        <button class="btn btn-direction--left"></button>
+                        <button class="btn btn-direction--empty"></button>
+                        <button class="btn btn-direction--right"></button>
+                    </div>
+                    <div>
+                        <button class="btn"></button>
+                        <button class="btn  btn-direction--down"></button>
+                        <button class="btn"></button>
+                    </div>
+                </div>
+                <div class=btn-control>
+                    <button class="btn btn-start" id="btn-start">A</button>
+                    <button class="btn btn-restart" id="btn-restart">B</button>
+                </div>
+                
+            </div>
+
+        
+    </main>
+        <script src="index.js" async defer></script>
+    </body>
+</html>
