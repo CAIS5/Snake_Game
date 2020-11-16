@@ -41,7 +41,8 @@ main {
 
 .game-title,
 .game-start,
-.game-score {
+.game-score,
+.game-over {
     margin-top: 5px;
     margin-bottom: 10px;
     text-transform: uppercase;
@@ -50,13 +51,16 @@ main {
     font-size: 22px;
 }
 
-.game-start{
+.game-start,
+.game-over{
     animation: blinking 1s linear infinite;
 }
 
-.game-score{
+.game-score,
+.game-over{
     display: none;
 }
+
 
 .game-container {
     margin: 1em auto;

@@ -1,6 +1,11 @@
 const grid = document.querySelector('.game-grid');
 const buttons = document.querySelectorAll('.btn-container .btn');
+
 let scoreID = document.querySelector("#score");
+let gameOver = document.querySelector('.game-over');
+let gameStart = document.querySelector('.game-start');
+let gameScore = document.querySelector('.game-score');
+
 let score = 0;
 let squares = [];
 
@@ -77,8 +82,9 @@ function createGrid() { // create 100 of these elements with a for loop
 }
 
 function startGame() { // switch a line 'start a game' to score display
-    document.querySelector('.game-start').style.display = 'none';
-    document.querySelector('.game-score').style.display = 'block';
+    gameStart.style.display = 'none';
+    gameOver.style.display = 'none';
+    gameScore.style.display = 'block';
 
     snake.forEach(index => squares[index].classList.add('snake'));
 
@@ -94,34 +100,41 @@ function startGame() { // switch a line 'start a game' to score display
 }
 
 function move() {
-    if (checkBoudaries()) {
-        return clearInterval(interval);
-    } else { // remove a tail of snake
-
-        const tail = snake.pop();
-        // remove styling from last element
-        squares[tail].classList.remove('snake');
-        // add square in direction we are heading
-        snake.unshift(snake[0] + direction);
-        // add styling so we can see it
-
-        // deal with snake head gets apple
-        if (squares[snake[0]].classList.contains('apple')) { // remove the class of apple
-            squares[snake[0]].classList.remove('apple');
-            // grow our snake by adding class of snake to it
-            squares[tail].classList.add('snake');
-
-            // grow our snake array
-            snake.push(tail);
-
-            // generate new apple
-            generateApple();
-
-            updateScoreAndSpeed();
+    try{
+        if (checkBoudaries()) {
+            gameScore.style.display = 'none';
+            gameOver.style.display = 'block';
+            return clearInterval(interval);
+        } else { // remove a tail of snake
+    
+            const tail = snake.pop();
+            // remove styling from last element
+            squares[tail].classList.remove('snake');
+            // add square in direction we are heading
+            snake.unshift(snake[0] + direction);
+            // add styling so we can see it
+    
+            // deal with snake head gets apple
+            if (squares[snake[0]].classList.contains('apple')) { // remove the class of apple
+                squares[snake[0]].classList.remove('apple');
+                // grow our snake by adding class of snake to it
+                squares[tail].classList.add('snake');
+    
+                // grow our snake array
+                snake.push(tail);
+    
+                // generate new apple
+                generateApple();
+    
+                updateScoreAndSpeed();
+            }
+            squares[snake[0]].classList.add('snake');
         }
-        squares[snake[0]].classList.add('snake');
+    }catch(err){
+        console.log(err);
     }
-}
+ };
+   
 
 function updateScoreAndSpeed() {
     score++;
@@ -146,8 +159,9 @@ function reset() {
     snake.forEach(s => squares[s].classList.remove('snake'));
     squares[appleIndex].classList.remove('apple');
 
-    document.querySelector('.game-start').style.display = 'block';
-    document.querySelector('.game-score').style.display = 'none';
+    gameStart.style.display = 'block';
+    gameScore.style.display = 'none';
+    gameOver.style.display = 'none';
 
     snake = [2, 1, 0];
     direction = 1;
@@ -155,6 +169,7 @@ function reset() {
     interval = 0;
     score = 0;
     scoreID.textContent = score;
+    gameScore.textContent = "Start a game";
     appleIndex = '';
     return clearInterval(interval);
 }
