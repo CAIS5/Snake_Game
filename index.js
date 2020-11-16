@@ -1,140 +1,172 @@
 const grid = document.querySelector('.game-grid');
-const btnControl = Array.from(document.querySelectorAll('.btn-control .btn'));
+const buttons = document.querySelectorAll('.btn-container .btn');
+let scoreID = document.querySelector("#score");
 let score = 0;
 let squares = [];
 
 let direction = 1;
-let width = 10;
-let currentSnake = [2, 1, 0] // initial indices position.
-
-const min = 1;
-const max = 99;
+let snake = [2, 1, 0]; // initial position.
 
 let positionApple = 0;
-let timerId;
-let speed = 1000;
-init();
+let interval = 0;
+let intervalTime = 1000;
+let speed = 0.95;
+let appleIndex = 4;
 
-function init() { // Create grid and push into HTML.
-    createGrid();
-    // Add snake style to game grids.
-    currentSnake.forEach(index => squares[index].classList.add('snake'));
+// direction:
+const LEFT = -1;
+const RIGHT = 1;
+const UP = -10;
+const DOWN = 10;
+
+const WIDTH = 10;
+const MAX = 100;
+const MIN = 1;
+
+// Create grid and push into HTML.
+createGrid();
+// Add snake style to game grids.
+// snake.forEach(index => squares[index].classList.add('snake'));
 
 
-    btnControl.forEach(b => {
-        b.addEventListener('click', e => {
-            if (e.target.textContent == 'A') {
-                startGame();
-            } else {
-                reset();
-            }
-        });
-    });
-
-    document.addEventListener('keyup', e => {
-        if (e.keyCode === 39) {
-            console.log('right pressed')
-            direction = 1
-        } else if (e.keyCode === 38) {
-            console.log('up pressed')
-            direction = - width
-        } else if (e.keyCode === 37) {
-            console.log('left pressed')
-            direction = -1
-        } else if (e.keyCode === 40) {
-            console.log('down pressed')
-            direction = + width
+buttons.forEach(button => {
+    button.addEventListener('click', e => {
+        const btn = e.target.classList;
+        if (btn.contains("btn-up")) {
+            direction = UP;
+        } else if (btn.contains("btn-down")) {
+            direction = DOWN;
+        } else if (btn.contains("btn-left")) {
+            direction = LEFT;
+        } else if (btn.contains("btn-right")) {
+            direction = RIGHT;
+        } else if (btn.contains("btn-start")) {
+            startGame();
+        } else if (btn.contains("btn-restart")) {
+            reset();
         }
     });
+});
 
+document.addEventListener('keyup', e => {
+    let key = e.keyCode;
+    switch (key) {
+        case 38: direction = UP;
+            break;
+        case 40: direction = DOWN;
+            break;
+        case 39: direction = RIGHT;
+            break;
+        case 37: direction = LEFT;
+            break;
+    }
+    // console.log(e.key);
+});
+
+
+function createGrid() { // create 100 of these elements with a for loop
+    for (let i = 0; i < MAX; i++) { // create element
+        const square = document.createElement('div');
+        // add styling to the element
+        square.classList.add('square');
+        // put the element into our grid
+        grid.appendChild(square);
+        // push it into a new squares array
+        squares.push(square);
+    }
 }
 
-function startGame() {
+function startGame() { // switch a line 'start a game' to score display
     document.querySelector('.game-start').style.display = 'none';
     document.querySelector('.game-score').style.display = 'block';
 
+    snake.forEach(index => squares[index].classList.add('snake'));
+
 
     generateApple();
-    timerId = setInterval(move, speed);
+
+
+    if (interval < 1) {
+        clearInterval(interval);
+        interval = setInterval(move, intervalTime);
+    }
+
+}
+
+function move() {
+    if (checkBoudaries()) {
+        return clearInterval(interval);
+    } else { // remove a tail of snake
+
+        const tail = snake.pop();
+        // remove styling from last element
+        squares[tail].classList.remove('snake');
+        // add square in direction we are heading
+        snake.unshift(snake[0] + direction);
+        // add styling so we can see it
+
+        // deal with snake head gets apple
+        if (squares[snake[0]].classList.contains('apple')) { // remove the class of apple
+            squares[snake[0]].classList.remove('apple');
+            // grow our snake by adding class of snake to it
+            squares[tail].classList.add('snake');
+
+            // grow our snake array
+            snake.push(tail);
+
+            // generate new apple
+            generateApple();
+
+            updateScoreAndSpeed();
+        }
+        squares[snake[0]].classList.add('snake');
+    }
+}
+
+function updateScoreAndSpeed() {
+    score++;
+    scoreID.textContent = score;
+    clearInterval(interval);
+    intervalTime = Math.floor(intervalTime * speed);
+    // console.log(intervalTime);
+    interval = setInterval(move, intervalTime);
+}
+
+function checkBoudaries() {
+    let hitBottom = (direction === DOWN) && (snake[0] + WIDTH) >= MAX;
+    let hitTop = (direction === UP) && (snake[0] - WIDTH) < 0;
+    let hitLeft = (direction === LEFT) && (snake[0] % WIDTH) === 0;
+    let hitRight = (direction === RIGHT) && (snake[0] % WIDTH) === 9;
+    let hitItself = squares[snake[0] + direction].classList.contains('snake');
+    return(hitBottom || hitTop || hitLeft || hitRight || hitItself) ? true : false;
 }
 
 
 function reset() {
-    clearInterval(timerId);
-    currentSnake = [0, 1, 2];
-    squares.forEach(s => s.classList.remove('snake'));
-
-    speed = 1000;
-    direction = 1;
-
-    currentSnake.forEach(index => squares[index].classList.add('snake'));
-    // console.log(currentSnake);
+    snake.forEach(s => squares[s].classList.remove('snake'));
+    squares[appleIndex].classList.remove('apple');
 
     document.querySelector('.game-start').style.display = 'block';
     document.querySelector('.game-score').style.display = 'none';
-}
 
-
-function createGrid() { // create 100 of these elements with a for loop
-    for (let i = 0; i < 100; i++) { // create element
-        const square = document.createElement('div')
-        // add styling to the element
-        square.classList.add('square')
-        // put the element into our grid
-        grid.appendChild(square)
-        // push it into a new squares array
-        squares.push(square)
-    }
-}
-
-
-function move() {
-    let hitTopWall = currentSnake[2] - width < 0 && direction === -10;
-    let hitBottomWall = currentSnake[2] + width >= 100 && direction === 10;
-    let hitRightWall = currentSnake[2] % width === 9 && direction === 1;
-    let hitLeftWall = currentSnake[2] % width === 0 && direction === -1;
-    let hitItself = squares[currentSnake[2] + direction].classList.contains('snake');
-    if (hitTopWall || hitBottomWall || hitRightWall || hitLeftWall) {
-        return reset();
-    }
-    updateCurrentSnake();
-}
-
-
-function updateCurrentSnake() {
-    const tail = currentSnake.pop()
-    // remove styling from last element
-    squares[tail].classList.remove('snake')
-    // add square in direction we are heading
-    currentSnake.unshift(currentSnake[0] + direction)
-    // add styling so we can see it
-
-    // deal with snake head gets apple
-    if (squares[currentSnake[0]].classList.contains('apple')) { // remove the class of apple
-        squares[currentSnake[0]].classList.remove('apple');
-        // grow our snake by adding class of snake to it
-        squares[tail].classList.add('snake');
-        console.log(tail)
-        // grow our snake array
-        currentSnake.push(tail)
-        console.log(currentSnake)
-        // generate new apple
-        generateApple()
-        // add one to the score
-        score++
-        // display our score
-        document.querySelector('#score').textContent = score;
-        // speed up our snake
-        speed *= 0.9;
-        timerId = setInterval(move, speed);
-        currentSnake.forEach(index => squares[index].classList.add('snake'));
-    }
-    squares[currentSnake[0]].classList.add('snake')
+    snake = [2, 1, 0];
+    direction = 1;
+    intervalTime = 1000;
+    interval = 0;
+    score = 0;
+    scoreID.textContent = score;
+    appleIndex = '';
+    return clearInterval(interval);
 }
 
 function generateApple() {
+    if (appleIndex) {
+        squares[appleIndex].classList.remove('apple');
+    }
     do {
-        appleIndex = Math.floor(Math.random() * squares.length);
+        appleIndex = Math.floor(Math.random() * MAX);
+        // console.log(`apple here : ${appleIndex}`);
     } while (squares[appleIndex].classList.contains('snake'))
     squares[appleIndex].classList.add('apple');
 }
+

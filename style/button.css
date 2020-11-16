@@ -25,11 +25,11 @@
     display: none;
 }
 
-.btn-direction .btn-direction--up,
-.btn-direction .btn-direction--down,
-.btn-direction .btn-direction--right,
-.btn-direction .btn-direction--left,
-.btn-direction .btn-direction--empty {
+.btn-direction .btn-up,
+.btn-direction .btn-down,
+.btn-direction .btn-right,
+.btn-direction .btn-left,
+.btn-direction .btn-empty {
     background: black;
     display: inline-block;
 }
